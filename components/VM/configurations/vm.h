@@ -163,6 +163,8 @@
     serial.timeout_attributes = 1; \
     time_server.putchar_attributes = 0; \
     time_server.timers_per_client = 9; \
+    time_server.the_timer_passive = true;\
+    time_server.irq_irq_vector = 3; \
     pci_config.putchar_attributes = 0; \
     rtc.putchar_attributes = 0; \
     /* Put the entire time server at the highest priority */ \
