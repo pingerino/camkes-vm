@@ -77,6 +77,21 @@ static vspace_t vspace;
 static sel4utils_alloc_data_t vspace_data;
 static vmm_t vmm;
 
+static int configure_sc_handler(vmm_vcpu_t *vcpu) {
+    uint32_t lower_budget = vmm_read_user_context(&vcpu->guest_state, USER_CONTEXT_EBX);
+    uint32_t upper_budget = vmm_read_user_context(&vcpu->guest_state, USER_CONTEXT_ECX);
+    uint32_t lower_period = vmm_read_user_context(&vcpu->guest_state, USER_CONTEXT_EDX);
+    uint32_t upper_period = vmm_read_user_context(&vcpu->guest_state, USER_CONTEXT_ESI);
+
+    uint64_t budget = ((uint64_t) upper_budget << 32llu) | lower_budget;
+    uint64_t period = ((uint64_t) upper_period << 32llu) | lower_period;
+
+    printf("VMM got %lu/%lu\n", budget, period);
+    int error = seL4_SchedControl_Configure(vmm.sched_ctrl, vmm.sc, budget, period, 0, 10);
+    printf("Result %d\n", error);
+    return 0;
+}
+
 int cross_vm_dataports_init(vmm_t *vmm) WEAK;
 int cross_vm_consumes_events_init(vmm_t *vmm, vspace_t *vspace, seL4_Word irq_badge) WEAK;
 int cross_vm_consumes_event_irq_num(void) WEAK;
@@ -761,6 +776,7 @@ void *main_continued(void *arg) {
 
 //    vmm_exit_init();
     /* Now go run the event loop */
+    reg_new_handler(&vmm, configure_sc_handler, 4);
     vmm_run(&vmm);
 
     return NULL;
