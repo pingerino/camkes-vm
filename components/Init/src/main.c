@@ -87,7 +87,7 @@ static int configure_sc_handler(vmm_vcpu_t *vcpu) {
     uint64_t period = ((uint64_t) upper_period << 32llu) | lower_period;
 
     printf("VMM got %lu/%lu\n", budget, period);
-    int error = seL4_SchedControl_Configure(vmm.sched_ctrl, vmm.sc, budget, period, 0, 10);
+    int error = seL4_SchedControl_Configure(vmm.sched_ctrl, vmm.sc, budget, period, seL4_MaxExtraRefills(9), 10);
     printf("Result %d\n", error);
     return 0;
 }
