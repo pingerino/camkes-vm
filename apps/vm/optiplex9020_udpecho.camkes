@@ -37,5 +37,6 @@ component VM {
         vm0.iospace_domain = 0x0f;
         vm0_config.pci_devices_iospace = 1;
         vm0.sched_ctrl = 0;
+        vm0._sc_size_bits = 9;
     }
 }
