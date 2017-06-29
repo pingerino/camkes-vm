@@ -41,12 +41,13 @@ def ipbench(console, output, budget, period):
         console.sendline(IPBENCH)
         # wait until ipbench finishes
         console.expect(RESULTS_RE, timeout=5*60)
-        output.write('{0},{1},'.format(i * 1000, PERIOD * 1000))
+        output.write('{0},{1},'.format(budget * 1000, PERIOD * 1000))
         output.write(console.match.group(0))
         output.write('\n')
 
 def changesc(console, budget, period):
     console.sendline('changesc {0} {1}'.format(budget * 1000, period * 1000))
+    console.expect('Result 0')
     console.expect('#')
 
 def main():
