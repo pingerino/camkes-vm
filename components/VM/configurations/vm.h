@@ -172,6 +172,8 @@
     /* Put the serial interrupt at 200  \
      * but Leave the rest of the serial at default priority */ \
     serial.serial_irq_priority = 200; \
+    serial.processed_putchar_passive = true; \
+    serial.raw_putchar_passive = true;\
     /* Now the VMM, guest and everything else should be at \
      * the default priority of 100 */ \
     /**/
