@@ -164,16 +164,21 @@
     time_server.putchar_attributes = 0; \
     time_server.timers_per_client = 9; \
     time_server.the_timer_passive = true;\
+    time_server.the_timer_priority = 254;\
+    time_server.irq_priority = 254;\
+    time_server.control_priority = 255;\
     time_server.irq_irq_vector = 3; \
     pci_config.putchar_attributes = 0; \
     rtc.putchar_attributes = 0; \
-    /* Put the entire time server at the highest priority */ \
-    time_server.priority = 255; \
     /* Put the serial interrupt at 200  \
      * but Leave the rest of the serial at default priority */ \
     serial.serial_irq_priority = 200; \
     serial.processed_putchar_passive = true; \
+    serial.processed_putchar_priority = 200; \
     serial.raw_putchar_passive = true;\
+    serial.raw_putchar_priority = 200;\
+    serial.control_priority = 201;\
+    serial.getchar_priority = 200;\
     /* Now the VMM, guest and everything else should be at \
      * the default priority of 100 */ \
     /**/
