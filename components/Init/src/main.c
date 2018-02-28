@@ -26,6 +26,7 @@
 #include <simple/simple_helpers.h>
 #include <utils/util.h>
 #include <vka/capops.h>
+#include <sel4/benchmark_utilisation_types.h>
 
 #include <camkes.h>
 
@@ -82,12 +83,19 @@ static int configure_sc_handler(vmm_vcpu_t *vcpu) {
     uint32_t upper_budget = vmm_read_user_context(&vcpu->guest_state, USER_CONTEXT_ECX);
     uint32_t lower_period = vmm_read_user_context(&vcpu->guest_state, USER_CONTEXT_EDX);
     uint32_t upper_period = vmm_read_user_context(&vcpu->guest_state, USER_CONTEXT_ESI);
+    uint64_t *ipcbuffer = (uint64_t *) &(seL4_GetIPCBuffer()->msg[0]);
 
     uint64_t budget = ((uint64_t) upper_budget << 32llu) | lower_budget;
     uint64_t period = ((uint64_t) upper_period << 32llu) | lower_period;
 
+    seL4_BenchmarkFinalizeLog();
+    seL4_BenchmarkGetThreadUtilisation(simple_get_tcb(&camkes_simple));
+    printf("Idle thread utilisation = %lu\n", ipcbuffer[BENCHMARK_IDLE_LOCALCPU_UTILISATION]);
+    printf("Overall utilisation = %lu\n", ipcbuffer[BENCHMARK_TOTAL_UTILISATION]);
     printf("VMM got %lu/%lu\n", budget, period);
     int error = seL4_SchedControl_Configure(vmm.sched_ctrl, vmm.sc, budget, period, seL4_MaxExtraRefills(9), 10);
+    seL4_BenchmarkResetLog();
+
     printf("Result %d\n", error);
     return 0;
 }
